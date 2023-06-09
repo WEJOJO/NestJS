@@ -13,24 +13,14 @@ export class BoardsService {
         @InjectRepository(BoardRepository)
         private boardRepository : BoardRepository,
         ){}
-    
-
-
     // getAllBoards(): Board[]
     // {
     //     return this.boards;
     // }
 
-    async createBoard(createBoardDto: CreateBoardDto) : Promise<Board>//
+    createBoard(createBoardDto: CreateBoardDto) : Promise<Board>//
     {
-        const {title, description} = createBoardDto;
-        const board = this.boardRepository.create ({
-            title,
-            description,
-            status: BoardStatus.PUBLIC,
-        })
-        await this.boardRepository.save(board);
-        return board;
+        return this.boardRepository.createBoard(createBoardDto);
     }
 
     async getBoardById(id: number): Promise <Board> {
