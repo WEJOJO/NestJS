@@ -13,46 +13,36 @@ export class BoardsService {
         @InjectRepository(BoardRepository)
         private boardRepository : BoardRepository,
         ){}
-    // getAllBoards(): Board[]
-    // {
-    //     return this.boards;
-    // }
+    
+    
+    async getAllBoards(): Promise<Board[]>
+    {
+        return this.boardRepository.find();
+    }
 
     createBoard(createBoardDto: CreateBoardDto) : Promise<Board>//
     {
         return this.boardRepository.createBoard(createBoardDto);
     }
 
-    async getBoardById(id: number): Promise <Board> {
+    getBoardById(id: number): Promise <Board> {
         // const found = await this.boardRepository.findOne(id);
-        const found = await this.boardRepository.findOne(({
-            where: {
-                id: id,
-            },
-        }));
-        if (!found)
-        {
-            //change default msg -> add msg as arg.
-            throw new NotFoundException(`Can\'t find Board with id:${id} -nhwang`);
-        }
-        return found;
+        return this.boardRepository.getBoardById(id);
     }
 
-    
+    deleteBoard(id: number): Promise<void>
+    {
+        return this.boardRepository.deleteBoard(id);
+    }
 
+    async updateBoardStatus(id : number, status: BoardStatus) : Promise<Board>
+    {
+        const board = await this.boardRepository.getBoardById(id);
+        board.status = status;
 
-    // deleteBoard(id: string): void
-    // {
-    //     const found = this.getBoardById(id); //이미 throw 하므로 한 번더 throw 할 필요는 없기 때문에 구문 추가 없음.
-    //     this.boards = this.boards.filter((board) => board.id !== found.id);
-    // }
-
-    // updateBoardStatus(id : string, status: BoardStatus) : Board 
-    // {
-    //     const board = this.getBoardById(id);
-    //     board.status = status;
-    //     return board;
-    // }
+        await this.boardRepository.save(board);
+        return board;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
