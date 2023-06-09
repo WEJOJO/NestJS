@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Board, BoardStatus } from './board.model';
 import { v1 as uuid } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -37,12 +37,19 @@ export class BoardsService {
     }
 
     getBoardById(id: string): Board {
-        return this.boards.find((board) => board.id === id);
+        const found = this.boards.find((board) => board.id === id);
+        if (!found)
+        {
+            //change default msg -> add msg as arg.
+            throw new NotFoundException('Can\'t find Board with id -nhwang');
+        }
+        return found;
     }
 
     deleteBoard(id: string): void
     {
-        this.boards = this.boards.filter((board) => board.id !== id);
+        const found = this.getBoardById(id); //이미 throw 하므로 한 번더 throw 할 필요는 없기 때문에 구문 추가 없음.
+        this.boards = this.boards.filter((board) => board.id !== found.id);
     }
 
     updateBoardStatus(id : string, status: BoardStatus) : Board 
