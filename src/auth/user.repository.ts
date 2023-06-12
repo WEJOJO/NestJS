@@ -1,5 +1,5 @@
 import { Entity } from "typeorm";
-import {Injectable} from '@nestjs/common';
+import {ConflictException, Injectable, InternalServerErrorException} from '@nestjs/common';
 import {User} from "./user.entity";
 import { DataSource, Repository } from "typeorm";
 import {AuthCredentialDto} from "./dto/auth-credential.dto";
@@ -15,10 +15,20 @@ export class UserRepository extends Repository<User>
     {
         const {username, password} = authCredentialDto;
         const user = this.create({username, password});
-        console.log(username, password);
-        console.log(user);
         
-        await this.save(user);
+        try {
+            await this.save(user);
+        } catch(error)
+        {
+            if (error.code == 23505)
+            {
+                throw new ConflictException('Existing username');
+            }
+            else
+            {
+                throw new InternalServerErrorException();
+            }
+        }
     }
 }
 
