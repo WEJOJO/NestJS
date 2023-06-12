@@ -17,9 +17,9 @@ export class BoardsController {
     
     
     @Get()
-    getAllBoard(): Promise<Board[]>
+    getAllBoard(@GetUser() user: User,): Promise<Board[]>
     {
-        return this.boardsService.getAllBoards();
+        return this.boardsService.getAllBoards(user);
     }
 
     @Post()
