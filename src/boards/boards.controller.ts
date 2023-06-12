@@ -5,6 +5,9 @@ import { CreateBoardDto } from './dto/create-board.dto';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 import { Board } from './board.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
+
 
 
 @Controller('boards')
@@ -21,9 +24,9 @@ export class BoardsController {
 
     @Post()
     @UsePipes(ValidationPipe)
-    createBoard(@Body() createBoardDto: CreateBoardDto): Promise<Board> ///요청의 Body를 받아온다고 이해함.
+    createBoard(@Body() createBoardDto: CreateBoardDto, @GetUser() user: User): Promise<Board> ///요청의 Body를 받아온다고 이해함.
     {
-        return this.boardsService.createBoard(createBoardDto);
+        return this.boardsService.createBoard(createBoardDto, user);
     }
 
     @Get('/:id') //  -> 동적인 값이 들어오겠다는 뜻으로 일단은 이해...
