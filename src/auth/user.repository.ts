@@ -35,5 +35,32 @@ export class UserRepository extends Repository<User>
             }
         }
     }
+    async setCurrentRefreshToken(refreshToken: string, id: number) {
+        const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+        await this.update(id, { currentHashedRefreshToken });
+      }
+    
+    async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+        // const user = await bcrypt.getById(id);
+        const user = await this.findOne({
+          where: {
+            id: id
+          }
+        })
+        const isRefreshTokenMatching = await bcrypt.compare(
+          refreshToken,
+          user.currentHashedRefreshToken,
+        );
+    
+        if (isRefreshTokenMatching) {
+          return user;
+        }
+      }
+    
+    //   async removeRefreshToken(id: number) {
+    //     return this.usersRepository.update(id, {
+    //       currentHashedRefreshToken: null,
+    //     });
+    //   }
 }
 

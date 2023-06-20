@@ -4,6 +4,7 @@ import { AuthCredentialDto } from './dto/auth-credential.dto';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcryptjs';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
         // @InjectRepository(UserRepository)
         private userRepository: UserRepository,
         private jwtService: JwtService,
+        private configService: ConfigService,
     ) {}
 
     //async 
@@ -40,4 +42,53 @@ export class AuthService {
             throw new UnauthorizedException('login failed');
         }
     }
+
+    /////////////
+    getCookieWithJwtAccessToken(id: number) {
+        const payload = { id };
+        const token = this.jwtService.sign(payload, {
+          secret: 'Secret1234',
+          expiresIn: 60*60,
+        });
+        return {
+          accessToken: token,
+          domain: '127.0.0.1',
+        //   path: '/',
+          httpOnly: true,
+          maxAge: 60 * 60 // expiresIn과 동일
+        };
+      }
+    
+    getCookieWithJwtRefreshToken(id: number) {
+        const payload = { id };
+        const token = this.jwtService.sign(payload, {
+          secret: 'Secret1234',
+          expiresIn: 10000,
+        });
+    
+        return {
+          refreshToken: token,
+          domain: '127.0.0.1',
+        //   path: '/',
+          httpOnly: true,
+          maxAge: 10000
+        };
+      }
+    
+    //   getCookiesForLogOut() {
+    //     return {
+    //       accessOption: {
+    //         domain: 'localhost',
+    //         path: '/',
+    //         httpOnly: true,
+    //         maxAge: 0,
+    //       },
+    //       refreshOption: {
+    //         domain: 'localhost',
+    //         path: '/',
+    //         httpOnly: true,
+    //         maxAge: 0,
+    //       },
+    //     };
+    //   }
 }

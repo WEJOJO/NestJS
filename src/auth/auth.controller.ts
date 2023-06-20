@@ -4,10 +4,11 @@ import { AuthService } from './auth.service';
 import { AuthCredentialDto } from './dto/auth-credential.dto';
 import {User} from "./user.entity";
 import { GetUser } from "./get-user.decorator";
+import { UserRepository } from './user.repository';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService : AuthService)
+    constructor(private authService : AuthService, private userRepository: UserRepository)
     {}
     @Post('/signup')
     signUp(@Body(ValidationPipe) authCredentialDto : AuthCredentialDto): Promise<void>
